@@ -29,7 +29,8 @@ public class GenerateAST {
                 "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print      : Expr expression",
                 "Var        : Token name, Expr initializer",
-                "While      : Expr condition, Stmt body"
+                "While      : Expr condition, Stmt body",
+                "Break      : "
         ));
     }
 
@@ -67,7 +68,12 @@ public class GenerateAST {
         //create new inner class
         writer.println("\n    public static class " + className + " extends " +baseName  + " {");
         //add fields
-        String[] fields = fieldList.split(", ");
+        String[] fields;
+        if (fieldList.isEmpty()) {
+            fields = new String[0];
+        } else {
+            fields = fieldList.split(", ");
+        }
         for (String field : fields) {
             writer.println("        public final " + field + ";");
         }

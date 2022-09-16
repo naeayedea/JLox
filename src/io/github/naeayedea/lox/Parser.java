@@ -26,6 +26,7 @@ public class Parser {
 
     private final List<Token> tokens;
     private int current = 0;
+    private int loopDepth = 0;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -50,12 +51,21 @@ public class Parser {
     }
 
     private Stmt statement() {
+        if (match(BREAK)) return breakStatement();
         if (match(FOR)) return forStatement();
         if (match(IF)) return ifStatement();
         if (match(PRINT)) return printStatement();
         if (match(WHILE)) return whileStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
         return expressionStatement();
+    }
+
+    private Stmt breakStatement() {
+        if (loopDepth == 0) {
+            Lox.error(previous(), "Must be inside a loop to use 'break'");
+        }
+        consume(SEMICOLON, "Expect ';' after 'break'.");
+        return new Stmt.Break();
     }
 
     private Stmt forStatement() {
@@ -86,27 +96,31 @@ public class Parser {
         }
         consume(RIGHT_PAREN, "Expect ')' after for clauses");
 
-        Stmt body = statement();
+        try {
+            loopDepth++;
+            Stmt body = statement();
 
-        //if increment present, execute immediately after the main body
-        if (increment != null ){
-            body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+            //if increment present, execute immediately after the main body
+            if (increment != null ){
+                body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+            }
+
+            //if the condition is not present, instead treat as true e.g. infinite loop or for (; increment)
+            if (condition == null) {
+                condition = new Expr.Literal(true);
+            }
+
+            body = new Stmt.While(condition, body);
+
+            //check for initializer, if its there it should run *before* the loop so put in block before while block
+            if (initializer != null) {
+                body = new Stmt.Block(Arrays.asList(initializer, body));
+            }
+
+            return body;
+        } finally {
+            loopDepth--;
         }
-
-        //if the condition is not present, instead treat as true e.g. infinite loop or for (; increment)
-        if (condition == null) {
-            condition = new Expr.Literal(true);
-        }
-
-        body = new Stmt.While(condition, body);
-
-        //check for initializer, if its there it should run *before* the loop so put in block before while block
-        if (initializer != null) {
-            body = new Stmt.Block(Arrays.asList(initializer, body));
-        }
-
-        return body;
-
     }
 
     private Stmt ifStatement() {
@@ -127,8 +141,14 @@ public class Parser {
         consume(LEFT_PAREN, "Expect '(' after 'while'.");
         Expr condition = expression();
         consume(RIGHT_PAREN, "Expect ')' after while condition.");
-        Stmt body = statement();
-        return new Stmt.While(condition, body);
+        try {
+            loopDepth++;
+            Stmt body = statement();
+            return new Stmt.While(condition, body);
+        } finally {
+            loopDepth--;
+        }
+
     }
 
     private Stmt printStatement() {

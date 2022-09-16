@@ -67,4 +67,10 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
     public Void visitWhileStmt(Stmt.While stmt) {
         return null;
     }
+
+    @Override
+    public Void visitBreakStmt(Stmt.Break stmt) {
+        System.out.println("BREAK");
+        return null;
+    }
 }
