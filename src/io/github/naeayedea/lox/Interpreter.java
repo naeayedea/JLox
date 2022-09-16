@@ -47,6 +47,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
                  throw new RuntimeError(expr.operator, "Cannot divide by 0.");
                 }
                 return (double) left / (double) right;
+            case MODULO:
+                checkWholeNumbers(expr.operator, left, right);
+                return (double) (((Double) left).intValue() % ((Double) right).intValue()) ;
             case STAR:
                 checkNumberOperands(expr.operator, left, right);
                 return (double) left * (double) right;
@@ -216,5 +219,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
     private void checkNumberOperands(Token operator, Object left, Object right) {
         if (left instanceof Double && right instanceof Double) return;
         throw new RuntimeError(operator, "Operands must be a number.");
+    }
+
+    private void checkWholeNumbers(Token operator, Object left, Object right) {
+        if (left instanceof Double && right instanceof Double)
+            if ((((double) left) % 1 == 0) && (((double) right) % 1 == 0))
+                return;
+        throw new RuntimeError(operator, "Modulo can only be performed on whole numbers.");
     }
 }
