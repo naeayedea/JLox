@@ -1,6 +1,7 @@
 package io.github.naeayedea.lox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.github.naeayedea.lox.TokenType.*;
@@ -58,9 +59,54 @@ public class Parser {
     }
 
     private Stmt forStatement() {
+        consume (LEFT_PAREN, "Expect '(' after 'for'. ");
 
-        return null;
-        
+        //general format of for statement: for (initializer; condition; increment);
+        //attempt to match initializer
+        Stmt initializer;
+        if (match(SEMICOLON)) {
+            initializer = null;
+        } else if (match(VAR)) {
+            initializer = varDeclaration();
+        } else {
+            initializer = expressionStatement();
+        }
+
+        //attempt to match condition
+        Expr condition = null;
+        if (!check(SEMICOLON)) {
+            condition = expression();
+        }
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+
+        //attempt to match increment
+        Expr increment = null;
+        if (!check(RIGHT_PAREN)) {
+            increment = expression();
+        }
+        consume(RIGHT_PAREN, "Expect ')' after for clauses");
+
+        Stmt body = statement();
+
+        //if increment present, execute immediately after the main body
+        if (increment != null ){
+            body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+        }
+
+        //if the condition is not present, instead treat as true e.g. infinite loop or for (; increment)
+        if (condition == null) {
+            condition = new Expr.Literal(true);
+        }
+
+        body = new Stmt.While(condition, body);
+
+        //check for initializer, if its there it should run *before* the loop so put in block before while block
+        if (initializer != null) {
+            body = new Stmt.Block(Arrays.asList(initializer, body));
+        }
+
+        return body;
+
     }
 
     private Stmt ifStatement() {
