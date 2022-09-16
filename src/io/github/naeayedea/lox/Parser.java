@@ -12,15 +12,6 @@ public class Parser {
         Expr followUp();
     }
 
-    private static class ParseError extends RuntimeException {}
-
-    private final List<Token> tokens;
-    private int current = 0;
-
-    public Parser(List<Token> tokens) {
-        this.tokens = tokens;
-    }
-
     private Expr parseLeftAssoc(JumpPrecedence func, TokenType... types) {
         Expr expr = func.followUp();
         while (match(types)) {
@@ -29,6 +20,15 @@ public class Parser {
             expr = new Expr.Binary(expr, operator, right);
         }
         return expr;
+    }
+
+    private static class ParseError extends RuntimeException {}
+
+    private final List<Token> tokens;
+    private int current = 0;
+
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
     }
 
     List<Stmt> parse() {
@@ -187,72 +187,27 @@ public class Parser {
     }
 
     private Expr or() {
-        Expr expr = and();
-
-        while(match(OR)) {
-            Token operator = previous();
-            Expr right = and();
-            expr = new Expr.Logical(expr, operator, right);
-        }
-
-        return expr;
+        return parseLeftAssoc(this::and, OR);
     }
 
     private Expr and() {
-        Expr expr = equality();
-
-        while (match(AND)) {
-            Token operator = previous();
-            Expr right = equality();
-            expr = new Expr.Logical(expr, operator, right);
-        }
-
-        return expr;
+        return parseLeftAssoc(this::equality, AND);
     }
 
     private Expr equality() {
-        Expr expr = comparison();
-
-        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
-            Token operator = previous();
-            Expr right = comparison();
-            expr = new Expr.Binary(expr, operator, right);
-        }
-        return expr;
-//        return parseLeftAssoc(this::comparison,BANG_EQUAL, EQUAL_EQUAL);
+        return parseLeftAssoc(this::comparison,BANG_EQUAL, EQUAL_EQUAL);
     }
 
     private Expr comparison() {
-        Expr expr = term();
-
-        while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
-            Token operator = previous();
-            Expr right = comparison();
-            expr = new Expr.Binary(expr, operator, right);
-        }
-        return expr;
+        return parseLeftAssoc(this::term, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL);
     }
 
     private Expr term() {
-        Expr expr = factor();
-
-        while (match(MINUS, PLUS)) {
-            Token operator = previous();
-            Expr right = factor();
-            expr = new Expr.Binary(expr, operator, right);
-        }
-        return expr;
+        return parseLeftAssoc(this::factor, MINUS, PLUS);
     }
 
     private Expr factor() {
-        Expr expr = unary();
-
-        while (match(STAR, SLASH, MODULO)) {
-            Token operator = previous();
-            Expr right = unary();
-            expr = new Expr.Binary(expr, operator, right);
-        }
-        return expr;
+        return parseLeftAssoc(this::unary, STAR, SLASH, MODULO);
     }
 
     private Expr unary() {
