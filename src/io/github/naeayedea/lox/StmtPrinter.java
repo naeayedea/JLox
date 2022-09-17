@@ -37,6 +37,14 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitFunctionStmt(Stmt.Function stmt) {
+        System.out.print("FUNCTION: " + stmt.name.lexeme + " params ( ");
+        stmt.params.forEach(p -> System.out.print(p.lexeme + " "));
+        System.out.print("))\n");
+        return null;
+    }
+
+    @Override
     public Void visitIfStmt(Stmt.If stmt) {
         if (stmt.elseBranch == null) {
             System.out.println("IF: "+(new ASTPrinter()).print(stmt.condition) + " THEN "+ stmt.thenBranch.accept(this) + ")");

@@ -1,6 +1,8 @@
 package io.github.naeayedea.lox;
 
 
+import java.util.stream.Collectors;
+
 public class ASTPrinter implements Expr.Visitor<String> {
 
     public static void main(String[] args) {
@@ -21,12 +23,17 @@ public class ASTPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitAssignExpr(Expr.Assign expr) {
-        return "(assignment "+ expr.name + " " + expr.value.accept(this) + ")";
+        return "(assignment "+ expr.name.lexeme + " " + expr.value.accept(this) + ")";
     }
 
     @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return parenthesize(expr.operator.lexeme, expr.left, expr.right);
+    }
+
+    @Override
+    public String visitCallExpr(Expr.Call expr) {
+        return "(function call: "+expr.callee.accept(this) + " parameters: (" + expr.arguments.stream().map(arg -> arg.accept(this)).collect(Collectors.joining(", "))+ "))";
     }
 
     @Override
@@ -51,7 +58,7 @@ public class ASTPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitVariableExpr(Expr.Variable expr) {
-        return "(variable " + expr.name + ")";
+        return "(variable " + expr.name.lexeme + ")";
     }
 
     private String parenthesize(String name, Expr... exprs) {
