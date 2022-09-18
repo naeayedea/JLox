@@ -63,6 +63,12 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        System.out.println("RETURN statement: " +stmt.keyword.lexeme + " " + exprPrinter.print(stmt.value) + ")");
+        return null;
+    }
+
+    @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         if (stmt.initializer != null) {
             System.out.println("VARIABLE: " + stmt.name.lexeme+ " " +exprPrinter.print(stmt.initializer));
