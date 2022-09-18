@@ -32,8 +32,12 @@ public class Environment {
         throw new RuntimeError(name, "Uninitialized variable: '" + name.lexeme + "'.");
     }
 
-    public void define(String name, Object value) {
-        values.put(name, value);
+    public void define(Token name, Object value) {
+        if (values.containsKey(name.lexeme)) {
+            throw new RuntimeError(name, "Variable: '" + name.lexeme + "' already defined within scope.");
+        } else {
+            values.put(name.lexeme, value);
+        }
     }
 
     public void assign(Token name, Object value) {

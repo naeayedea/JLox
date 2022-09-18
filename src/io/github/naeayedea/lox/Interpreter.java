@@ -9,7 +9,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
     private Environment environment = globals;
 
     public Interpreter() {
-        globals.define("clock", new LoxCallable() {
+        globals.define(new Token(TokenType.IDENTIFIER, "clock", null, -1), new LoxCallable() {
             @Override
             public int arity() {
                 return 0;
@@ -174,7 +174,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
         LoxFunction function = new LoxFunction(stmt, environment);
-        environment.define(stmt.name.lexeme, function);
+        environment.define(stmt.name, function);
         return null;
     }
 
@@ -210,7 +210,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
         if (stmt.initializer != null) {
             value = evaluate(stmt.initializer);
         }
-        environment.define(stmt.name.lexeme, value);
+        environment.define(stmt.name, value);
         return null;
     }
 
