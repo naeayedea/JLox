@@ -2,10 +2,11 @@ package io.github.naeayedea.lox;
 
 public class StmtPrinter implements Stmt.Visitor<Void> {
 
+    private ASTPrinter exprPrinter = new ASTPrinter();
+
     public void print(Stmt stmt) {
         stmt.accept(this);
     }
-
 
     private void printTabs(long num) {
         StringBuilder tabs = new StringBuilder();
@@ -32,7 +33,7 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
 
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
-        System.out.println("EXPRESSION: "+(new ASTPrinter()).print(stmt.expression));
+        System.out.println("EXPRESSION: "+exprPrinter.print(stmt.expression));
         return null;
     }
 
@@ -47,9 +48,9 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
     @Override
     public Void visitIfStmt(Stmt.If stmt) {
         if (stmt.elseBranch == null) {
-            System.out.println("IF: "+(new ASTPrinter()).print(stmt.condition) + " THEN "+ stmt.thenBranch.accept(this) + ")");
+            System.out.println("IF: "+exprPrinter.print(stmt.condition) + " THEN "+ stmt.thenBranch.accept(this) + ")");
         } else {
-            System.out.println("IF: "+(new ASTPrinter()).print(stmt.condition) + stmt.thenBranch.accept(this) + " ELSE " + stmt.elseBranch.accept(this));
+            System.out.println("IF: "+exprPrinter.print(stmt.condition) + stmt.thenBranch.accept(this) + " ELSE " + stmt.elseBranch.accept(this));
 
         }
         return null;
@@ -57,16 +58,16 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
 
     @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
-        System.out.println("PRINT: "+(new ASTPrinter()).print(stmt.expression));
+        System.out.println("PRINT: "+exprPrinter.print(stmt.expression));
         return null;
     }
 
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         if (stmt.initializer != null) {
-            System.out.println("VARIABLE: " + stmt.name+ " " +(new ASTPrinter()).print(stmt.initializer));
+            System.out.println("VARIABLE: " + stmt.name.lexeme+ " " +exprPrinter.print(stmt.initializer));
         } else {
-            System.out.println("VARIABLE: " + stmt.name+ " uninitialized");
+            System.out.println("VARIABLE: " + stmt.name.lexeme+ " uninitialized");
         }
         return null;
     }
