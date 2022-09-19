@@ -10,21 +10,30 @@ import java.util.List;
 
 public class Lox {
 
-    private static final boolean debug = true;
+    private static boolean debug = false;
 
-    private static boolean REPL;
+    private static boolean REPL = false;
     private static final Interpreter interpreter = new Interpreter();
     private static boolean hadError = false;
     private static boolean hadRuntimeError = false;
+
     public static void main(String[] args) throws IOException {
-        if (args.length > 1) {
-            System.out.println("Usage: jlox [script]");
-            System.exit(64);
+        if (args.length == 2) {
+            if (args[1].equals("-debug")) {
+                debug = true;
+                runFile(args[0]);
+            } else {
+                System.out.println("Usage: jlox [script] (-debug)?");
+                System.exit(64);
+            }
         } else if (args.length == 1) {
-            REPL = true;
-            runFile(args[0]);
+            if (args[0].equals("-debug")) {
+                debug = true;
+                runPrompt();
+            } else {
+                runFile(args[0]);
+            }
         } else {
-            REPL = false;
             runPrompt();
         }
     }
@@ -91,12 +100,6 @@ public class Lox {
     }
 
     private static void debug(List<Token> tokens, List<Stmt> statements) {
-//        if (debug) {
-//            System.out.println("\nScanned Tokens: ");
-//            for (Token token : tokens) {
-//                System.out.println(token);
-//            }
-//        }
 
         if (debug) {
             System.out.println("\nParsed Statements: ");
