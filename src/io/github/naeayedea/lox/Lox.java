@@ -84,6 +84,7 @@ public class Lox {
         //resolve variables
         Resolver resolver = new Resolver(interpreter);
         resolver.resolve(statements);
+        resolver.reportErrors();
 
         //stop if there's a resolution error
         if (hadError) return;

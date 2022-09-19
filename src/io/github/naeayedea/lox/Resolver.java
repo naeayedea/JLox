@@ -1,20 +1,38 @@
 package io.github.naeayedea.lox;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
 
-    private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+    private static class Error {
+
+        public final Token token;
+        public final String message;
+
+        public Error(Token token, String message) {
+            this.token = token;
+            this.message = message;
+        }
+    }
+
+    private final Stack<Map<String, Short>> scopes = new Stack<>();
+    private final List<Error> errors = new ArrayList<>();
     private FunctionType currentFunction = FunctionType.NONE;
     private boolean inLoop = false;
     private int numBlocks = 0;
     private final Interpreter interpreter;
 
+
     public Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
+        beginScope(); //define a base scope for all things e.g. global scope
+    }
+
+    public void reportErrors() {
+        errors.sort(Comparator.comparing(e -> e.token.line));
+        for (Error error : errors) {
+            Lox.error(error.token, error.message);
+        }
     }
 
     private enum FunctionType {
@@ -22,9 +40,22 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
         FUNCTION
     }
 
+    public short getShort(Short s) {
+        return s != null ? s : 0;
+    }
+
     public void resolve(List<Stmt> statements) {
-        for(Stmt statement : statements) {
+        for (Stmt statement : statements) {
             resolve(statement);
+        }
+        //after all statements have been resolved, do one more sweep and make sure all variables are used.
+        for (Stmt statement : statements) {
+            if (statement instanceof Stmt.Var) {
+                Stmt.Var var = (Stmt.Var) statement;
+                    if (!scopes.isEmpty() && (getShort(scopes.peek().get(var.name.lexeme)) & 0x0010) != 0x0010) {
+                        errors.add(new Error(var.name, "unused variable: "+var.name.lexeme));
+                }
+            }
         }
     }
 
@@ -36,6 +67,7 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
                 } else {
                     interpreter.resolve(expr, scopes.size() - 1 - i);
                 }
+                scopes.get(i).put(name.lexeme, (short) (getShort(scopes.get(i).get(name.lexeme)) | 0x0010));
                 return;
 
             }
@@ -73,16 +105,16 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
 
     private void declare(Token name) {
         if (scopes.isEmpty()) return;
-        Map<String, Boolean> scope = scopes.peek();
+        Map<String, Short> scope = scopes.peek();
         if (scope.containsKey(name.lexeme)) {
-            Lox.error(name, "Variable: '" + name.lexeme + "' already defined within scope.");
+            errors.add(new Error(name, "Variable: '" + name.lexeme + "' already defined within scope."));
         }
-        scope.put(name.lexeme, false);
+        scope.put(name.lexeme, (short) 0x0000);
     }
 
     private void define(Token name) {
         if (scopes.isEmpty()) return;
-        scopes.peek().put(name.lexeme, true);
+        scopes.peek().put(name.lexeme, (short) 0x1000);
     }
 
     @Override
@@ -134,8 +166,8 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
 
     @Override
     public String visitVariableExpr(Expr.Variable expr) {
-        if (!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
-            Lox.error(expr.name, "Can't read local variable in its own initializer.");
+        if (!scopes.isEmpty() && (getShort(scopes.peek().get(expr.name.lexeme)) & 0x0001) == 0x0001) {
+            errors.add(new Error(expr.name, "Can't read local variable in its own initializer."));
         }
 
         resolveLocal(expr, expr.name);
@@ -185,7 +217,7 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
     @Override
     public Void visitReturnStmt(Stmt.Return stmt) {
         if (currentFunction == FunctionType.NONE) {
-            Lox.error(stmt.keyword, "Can't return from top-level code.");
+            errors.add(new Error(stmt.keyword, "Can't return from top-level code."));
         }
         if (stmt.value != null) {
             resolve(stmt.value);
@@ -216,7 +248,7 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
     @Override
     public Void visitBreakStmt(Stmt.Break stmt) {
         if (!inLoop) {
-            Lox.error(stmt.keyword, "Cannot break outside of a loop.");
+            errors.add(new Error(stmt.keyword, "Cannot break outside of a loop."));
         }
         return null;
     }
