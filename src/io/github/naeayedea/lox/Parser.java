@@ -63,11 +63,9 @@ public class Parser {
     }
 
     private Stmt breakStatement() {
-        if (loopDepth == 0) {
-            Lox.error(previous(), "Must be inside a loop to use 'break'");
-        }
+        Token keyword = previous();
         consume(SEMICOLON, "Expect ';' after 'break'.");
-        return new Stmt.Break();
+        return new Stmt.Break(keyword);
     }
 
     private Stmt forStatement() {

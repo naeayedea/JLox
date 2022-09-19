@@ -72,6 +72,13 @@ public class Lox {
         //stop if there's a syntax error
         if (hadError) return;
 
+        //resolve variables
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(statements);
+
+        //stop if there's a resolution error
+        if (hadError) return;
+
         //prints debug information if debug flag is set
         debug(tokens, statements);
 

@@ -2,6 +2,7 @@ package io.github.naeayedea.lox;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Environment {
     private final Environment enclosing;
@@ -32,6 +33,18 @@ public class Environment {
         throw new RuntimeError(name, "Uninitialized variable: '" + name.lexeme + "'.");
     }
 
+    public Object getAt(int distance, String name) {
+        return ancestor(distance).values.get(name);
+    }
+
+    private Environment ancestor(int distance) {
+        Environment environment = this;
+        for (int i = 0; i < distance; i++) {
+            environment = Objects.requireNonNull(environment).enclosing;
+        }
+        return environment;
+    }
+
     public void define(Token name, Object value) {
         if (values.containsKey(name.lexeme)) {
             throw new RuntimeError(name, "Variable: '" + name.lexeme + "' already defined within scope.");
@@ -48,5 +61,9 @@ public class Environment {
         } else {
             throw new RuntimeError(name, "Undefined variable: '" + name.lexeme + "'.");
         }
+    }
+
+    public void assignAt(int distance, Token name, Object value) {
+        ancestor(distance).values.put(name.lexeme, value);
     }
 }
