@@ -82,9 +82,11 @@ public class Lox {
         if (hadError) return;
 
         //resolve variables
-        Resolver resolver = new Resolver(interpreter);
-        resolver.resolve(statements);
-        resolver.reportErrors();
+        if (!REPL) {
+            Resolver resolver = new Resolver(interpreter);
+            resolver.resolve(statements);
+            resolver.reportErrors();
+        }
 
         //stop if there's a resolution error
         if (hadError) return;
