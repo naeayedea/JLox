@@ -40,6 +40,10 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
         FUNCTION
     }
 
+    public boolean notSet(Short bitField, Short mask) {
+        return bitField != null && (bitField & mask) != mask;
+    }
+
     public short getShort(Short s) {
         return s != null ? s : 0;
     }
@@ -52,7 +56,7 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
         for (Stmt statement : statements) {
             if (statement instanceof Stmt.Var) {
                 Stmt.Var var = (Stmt.Var) statement;
-                    if (!scopes.isEmpty() && (getShort(scopes.peek().get(var.name.lexeme)) & 0x0010) != 0x0010) {
+                if (!scopes.isEmpty() && notSet(scopes.peek().get(var.name.lexeme), (short) 0x0010)) {
                         errors.add(new Error(var.name, "unused variable: "+var.name.lexeme));
                 }
             }
@@ -114,7 +118,7 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
 
     private void define(Token name) {
         if (scopes.isEmpty()) return;
-        scopes.peek().put(name.lexeme, (short) 0x1000);
+        scopes.peek().put(name.lexeme, (short) 0x0001);
     }
 
     @Override
@@ -166,7 +170,7 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
 
     @Override
     public String visitVariableExpr(Expr.Variable expr) {
-        if (!scopes.isEmpty() && (getShort(scopes.peek().get(expr.name.lexeme)) & 0x0001) == 0x0001) {
+        if (!scopes.isEmpty() && notSet(scopes.peek().get(expr.name.lexeme), (short) 0x0001)) {
             errors.add(new Error(expr.name, "Can't read local variable in its own initializer."));
         }
 
