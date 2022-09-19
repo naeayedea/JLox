@@ -73,9 +73,9 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
                 }
                 scopes.get(i).put(name.lexeme, (short) (getShort(scopes.get(i).get(name.lexeme)) | 0x0010));
                 return;
-
             }
         }
+        errors.add(new Error(name, "Undefined variable: '" + name.lexeme + "'."));
     }
 
     private void resolveFunction(Stmt.Function function, FunctionType type) {
