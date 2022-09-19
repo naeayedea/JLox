@@ -110,8 +110,13 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
     private void declare(Token name) {
         if (scopes.isEmpty()) return;
         Map<String, Short> scope = scopes.peek();
-        if (scope.containsKey(name.lexeme)) {
-            errors.add(new Error(name, "Variable: '" + name.lexeme + "' already defined within scope."));
+        if (!scopes.isEmpty()) {
+            for (int i = 0; i < numBlocks; i++) {
+                if (scopes.get(i).containsKey(name.lexeme)) {
+                    errors.add(new Error(name, "Variable: '" + name.lexeme + "' already defined within scope."));
+
+                }
+            }
         }
         scope.put(name.lexeme, (short) 0x0000);
     }
