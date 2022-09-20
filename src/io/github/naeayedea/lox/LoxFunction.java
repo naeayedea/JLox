@@ -12,6 +12,12 @@ public class LoxFunction implements LoxCallable {
         this.closure = closure;
     }
 
+    public LoxFunction bind(LoxInstance instance) {
+        Environment environment = new Environment(closure);
+        environment.define(new Token(TokenType.IDENTIFIER, "this", null, -1), instance);
+        return new LoxFunction(declaration, environment);
+    }
+
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments) {
         //create a new environment for the function, e.g. function should only be able to see and access global variables, functions
