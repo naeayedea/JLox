@@ -1,10 +1,14 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Parser;
+
+import io.github.naeayedea.lox.Lexer.Token;
+import io.github.naeayedea.lox.Lexer.TokenType;
+import io.github.naeayedea.lox.Lox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.github.naeayedea.lox.TokenType.*;
+import static io.github.naeayedea.lox.Lexer.TokenType.*;
 
 public class Parser {
 
@@ -30,7 +34,7 @@ public class Parser {
         return expr;
     }
 
-    List<Stmt> parse() {
+    public List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()) {
             statements.add(declaration());

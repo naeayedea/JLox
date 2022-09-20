@@ -1,5 +1,15 @@
 package io.github.naeayedea.lox;
 
+import io.github.naeayedea.lox.Interpreter.Interpreter;
+import io.github.naeayedea.lox.Lexer.Scanner;
+import io.github.naeayedea.lox.Lexer.Token;
+import io.github.naeayedea.lox.Lexer.TokenType;
+import io.github.naeayedea.lox.Parser.Parser;
+import io.github.naeayedea.lox.Parser.Stmt;
+import io.github.naeayedea.lox.analysis.Resolver;
+import io.github.naeayedea.lox.errors.RuntimeError;
+import io.github.naeayedea.tools.StmtPrinter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -116,7 +126,7 @@ public class Lox {
         }
     }
 
-    static void error(int line, String message) {
+    public static void error(int line, String message) {
         report(line, "", message);
     }
 

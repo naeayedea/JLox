@@ -1,10 +1,12 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Parser;
+
+import io.github.naeayedea.lox.Lexer.Token;
 
 import java.util.List;
 
-abstract class Stmt {
+public abstract class Stmt {
 
-    interface Visitor<R> {
+    public interface Visitor<R> {
         R visitBlockStmt(Block stmt);
         R visitClassStmt(Class stmt);
         R visitExpressionStmt(Expression stmt);
@@ -25,7 +27,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitBlockStmt(this);
         }
    }
@@ -40,7 +42,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitClassStmt(this);
         }
    }
@@ -53,7 +55,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitExpressionStmt(this);
         }
    }
@@ -70,7 +72,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitFunctionStmt(this);
         }
    }
@@ -87,7 +89,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitIfStmt(this);
         }
    }
@@ -100,7 +102,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitPrintStmt(this);
         }
    }
@@ -115,7 +117,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitReturnStmt(this);
         }
    }
@@ -130,7 +132,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitVarStmt(this);
         }
    }
@@ -145,7 +147,7 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitWhileStmt(this);
         }
    }
@@ -158,9 +160,9 @@ abstract class Stmt {
         }
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitBreakStmt(this);
         }
    }
-    abstract <R> R accept(Visitor<R> visitor);
+    public abstract <R> R accept(Visitor<R> visitor);
 }

@@ -1,11 +1,19 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Interpreter;
+
+import io.github.naeayedea.lox.Parser.Expr;
+import io.github.naeayedea.lox.Lexer.Token;
+import io.github.naeayedea.lox.Lexer.TokenType;
+import io.github.naeayedea.lox.Lox;
+import io.github.naeayedea.lox.Parser.Stmt;
+import io.github.naeayedea.lox.errors.Return;
+import io.github.naeayedea.lox.errors.RuntimeError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     public final Environment globals = new Environment();
     private final Map<Expr, Integer> locals = new HashMap<>();

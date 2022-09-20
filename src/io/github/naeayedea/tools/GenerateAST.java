@@ -56,7 +56,7 @@ public class GenerateAST {
             defineType(writer, baseName, className, fields);
         }
         //the base accept method
-        writer.println("    abstract <R> R accept(Visitor<R> visitor);");
+        writer.println("    public abstract <R> R accept(Visitor<R> visitor);");
 
         writer.println("}");
         writer.close();
@@ -96,7 +96,7 @@ public class GenerateAST {
         //visitor pattern
         writer.println();
         writer.println("        @Override");
-        writer.println("        <R> R accept(Visitor<R> visitor) {");
+        writer.println("        public <R> R accept(Visitor<R> visitor) {");
         writer.println("            return visitor.visit" + className + baseName + "(this);");
         writer.println("        }");
 

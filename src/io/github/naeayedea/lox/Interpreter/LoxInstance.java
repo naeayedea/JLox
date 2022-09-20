@@ -1,4 +1,7 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Interpreter;
+
+import io.github.naeayedea.lox.Lexer.Token;
+import io.github.naeayedea.lox.errors.RuntimeError;
 
 import java.util.HashMap;
 import java.util.Map;

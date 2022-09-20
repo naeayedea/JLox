@@ -1,5 +1,9 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.tools;
 
+
+import io.github.naeayedea.lox.Parser.Expr;
+import io.github.naeayedea.lox.Lexer.Token;
+import io.github.naeayedea.lox.Lexer.TokenType;
 
 import java.util.stream.Collectors;
 
@@ -43,7 +47,7 @@ public class ASTPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitSetExpr(Expr.Set expr) {
-        return "(field set: " + expr.name.lexeme + "value: " + expr.value.accept(this) + ")";
+        return "(field set: " + expr.name.lexeme + " value: " + expr.value.accept(this) + ")";
     }
 
     @Override

@@ -1,4 +1,6 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.errors;
+
+import io.github.naeayedea.lox.Lexer.Token;
 
 public class RuntimeError extends RuntimeException {
 

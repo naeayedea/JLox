@@ -1,11 +1,13 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Lexer;
+
+import io.github.naeayedea.lox.Lox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.naeayedea.lox.TokenType.*;
+import static io.github.naeayedea.lox.Lexer.TokenType.*;
 
 public class Scanner {
 
@@ -39,7 +41,7 @@ public class Scanner {
     private int current;
     private int line;
 
-    Scanner(String source) {
+    public Scanner(String source) {
         this.source = source;
         tokens = new ArrayList<>();
         start = 0;

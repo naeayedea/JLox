@@ -1,4 +1,4 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Lexer;
 
 public enum TokenType {
     // Single-character tokens.

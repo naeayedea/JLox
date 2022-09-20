@@ -1,12 +1,12 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Lexer;
 
 public class Token {
     public final TokenType type;
     public final String lexeme;
     public final Object literal;
-    final int line;
+    public final int line;
 
-    Token(TokenType type, String lexeme, Object literal, int line) {
+    public Token(TokenType type, String lexeme, Object literal, int line) {
         this.type = type;
         this.lexeme = lexeme;
         this.literal = literal;

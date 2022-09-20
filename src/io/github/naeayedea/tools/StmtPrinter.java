@@ -1,4 +1,6 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.tools;
+
+import io.github.naeayedea.lox.Parser.Stmt;
 
 public class StmtPrinter implements Stmt.Visitor<Void> {
 
@@ -46,7 +48,7 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
 
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
-        printWithTabs("EXPRESSION: "+exprPrinter.print(stmt.expression), 0);
+        printWithTabs("EXPRESSION: "+exprPrinter.print(stmt.expression) +"\n", 0);
         return null;
     }
 

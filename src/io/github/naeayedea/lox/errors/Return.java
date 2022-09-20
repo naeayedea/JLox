@@ -1,4 +1,4 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.errors;
 
 public class Return extends RuntimeException {
     public final Object value;

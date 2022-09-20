@@ -1,4 +1,9 @@
-package io.github.naeayedea.lox;
+package io.github.naeayedea.lox.Interpreter;
+
+import io.github.naeayedea.lox.Lexer.Token;
+import io.github.naeayedea.lox.Lexer.TokenType;
+import io.github.naeayedea.lox.Parser.Stmt;
+import io.github.naeayedea.lox.errors.Return;
 
 import java.util.List;
 
