@@ -146,7 +146,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>  {
         }
 
         Object value = evaluate(expr.value);
-        ((LoxInstance) object).set(expr.name, expr.value);
+        ((LoxInstance) object).set(expr.name, value);
         return value;
     }
 
