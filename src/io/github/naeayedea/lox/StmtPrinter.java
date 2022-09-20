@@ -2,7 +2,7 @@ package io.github.naeayedea.lox;
 
 public class StmtPrinter implements Stmt.Visitor<Void> {
 
-    private ASTPrinter exprPrinter = new ASTPrinter();
+    private final ASTPrinter exprPrinter = new ASTPrinter();
 
     public void print(Stmt stmt) {
         stmt.accept(this);
@@ -15,77 +15,88 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
         }
         System.out.print(tabs);
     }
+
+    private void printWithTabs(String content, long offset) {
+        printTabs(indents + offset); System.out.print(content);
+    }
+
     //global variable purely for printing n number of tabs
-    long recursions = 0;
+    long indents = 0;
     @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
-        recursions++;
-        System.out.println("BLOCK");
+        indents++;
+        printWithTabs("BLOCK\n", -1);
         for (Stmt innerStmt : stmt.statements) {
-            printTabs(recursions);
             print(innerStmt);
         }
-        printTabs(recursions - 1);
-        System.out.println("BLOCK END");
-        recursions--;
+        printWithTabs("BLOCK END\n", -1);
+        indents--;
         return null;
     }
 
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
-        System.out.println("EXPRESSION: "+exprPrinter.print(stmt.expression));
+        printWithTabs("EXPRESSION: "+exprPrinter.print(stmt.expression), 0);
         return null;
     }
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-        System.out.print("FUNCTION: " + stmt.name.lexeme + " params ( ");
+        printWithTabs("FUNCTION: " + stmt.name.lexeme + " params ( ", -1);
         stmt.params.forEach(p -> System.out.print(p.lexeme + " "));
-        System.out.print("))\n");
+        System.out.print(") METHODS:\n");
+        indents++;
+        stmt.body.forEach(s -> s.accept(this));
+        indents--;
+        printWithTabs("END FUNCTION\n", 0);
         return null;
     }
 
     @Override
     public Void visitIfStmt(Stmt.If stmt) {
         if (stmt.elseBranch == null) {
-            System.out.println("IF: "+exprPrinter.print(stmt.condition) + " THEN "+ stmt.thenBranch.accept(this) + ")");
+            printWithTabs("IF: "+exprPrinter.print(stmt.condition) + " THEN "+ stmt.thenBranch.accept(this) + ")\n", 0);
         } else {
-            System.out.println("IF: "+exprPrinter.print(stmt.condition) + stmt.thenBranch.accept(this) + " ELSE " + stmt.elseBranch.accept(this));
-
+            printWithTabs("IF: "+exprPrinter.print(stmt.condition) + stmt.thenBranch.accept(this) + " ELSE " + stmt.elseBranch.accept(this) + "\n", 0);
         }
         return null;
     }
 
     @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
-        System.out.println("PRINT: "+exprPrinter.print(stmt.expression));
+        printWithTabs("PRINT: "+exprPrinter.print(stmt.expression) + "\n", 0);
         return null;
     }
 
     @Override
     public Void visitReturnStmt(Stmt.Return stmt) {
-        System.out.println("RETURN statement: " +stmt.keyword.lexeme + " " + exprPrinter.print(stmt.value) + ")");
+        printWithTabs("RETURN statement: " +stmt.keyword.lexeme + " (" + exprPrinter.print(stmt.value) + ")\n", 0);
         return null;
     }
 
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         if (stmt.initializer != null) {
-            System.out.println("VARIABLE: " + stmt.name.lexeme+ " " +exprPrinter.print(stmt.initializer));
+            printWithTabs("VARIABLE: " + stmt.name.lexeme+ " " +exprPrinter.print(stmt.initializer) + "\n", 0);
         } else {
-            System.out.println("VARIABLE: " + stmt.name.lexeme+ " uninitialized");
+            printWithTabs("VARIABLE: " + stmt.name.lexeme+ " uninitialized\n", 0);
         }
         return null;
     }
 
     @Override
     public Void visitWhileStmt(Stmt.While stmt) {
+        printWithTabs("WHILE LOOP: " + stmt.condition.accept(exprPrinter) + "\n", 0);
+        indents++;
+        stmt.body.accept(this);
+        indents--;
+        printWithTabs("END LOOP\n", 0);
         return null;
     }
 
     @Override
     public Void visitBreakStmt(Stmt.Break stmt) {
-        System.out.println("BREAK");
+        printWithTabs("BREAK\n", 0);
         return null;
     }
 }
