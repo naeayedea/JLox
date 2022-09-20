@@ -35,6 +35,16 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitClassStmt(Stmt.Class stmt) {
+        indents++;
+        printWithTabs("CLASS: " + stmt.name.lexeme + " METHODS:\n", -1);
+        stmt.methods.forEach(s -> {printTabs(indents); s.accept(this);});
+        printWithTabs("END CLASS\n", -1);
+        indents--;
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
         printWithTabs("EXPRESSION: "+exprPrinter.print(stmt.expression), 0);
         return null;
