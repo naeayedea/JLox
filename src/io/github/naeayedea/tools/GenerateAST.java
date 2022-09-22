@@ -29,7 +29,7 @@ public class GenerateAST {
 
         defineAST(outputDir, "Stmt", Arrays.asList(
                 "Block      : List<Stmt> statements",
-                "Class      : Token name, List<Stmt.Function> methods",
+                "Class      : Token name, List<Stmt.Function> methods, List<Stmt.Function> statics",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> params, List<Stmt> body",
                 "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
@@ -45,9 +45,10 @@ public class GenerateAST {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
-        writer.println("package io.github.naeayedea.lox;\n");
+        writer.println("package io.github.naeayedea.lox.Parser;\n");
         writer.println("import java.util.List;\n");
-        writer.println("abstract class " + baseName + " {\n");
+        writer.println("import io.github.naeayedea.lox.Lexer.Token;\n");
+                writer.println("public abstract class " + baseName + " {\n");
         defineVisitor(writer, baseName, types);
         //The AST classes
         for (String type : types) {
@@ -63,7 +64,7 @@ public class GenerateAST {
     }
 
     private static void defineVisitor(PrintWriter writer, String baseName, List<String> types) {
-        writer.println("    interface Visitor<R> {");
+        writer.println("    public interface Visitor<R> {");
         for (String type : types) {
             String typeName = type.split(":")[0].trim();
             writer.println("        R visit" + typeName + baseName + "(" + typeName + " " + baseName.toLowerCase() + ");");
