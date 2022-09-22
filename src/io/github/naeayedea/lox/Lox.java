@@ -8,6 +8,7 @@ import io.github.naeayedea.lox.Parser.Parser;
 import io.github.naeayedea.lox.Parser.Stmt;
 import io.github.naeayedea.lox.analysis.Resolver;
 import io.github.naeayedea.lox.errors.RuntimeError;
+import io.github.naeayedea.tools.PrettyPrinter;
 import io.github.naeayedea.tools.StmtPrinter;
 
 import java.io.BufferedReader;
@@ -100,6 +101,10 @@ public class Lox {
 
         //stop if there's a resolution error
         if (hadError) return;
+
+        System.out.println("--------------------------------- PRETTY PRINT ---------------------------------\n");
+        (new PrettyPrinter()).print(statements);
+        System.out.println("\n---------------------------------      END     ---------------------------------\n");
 
         //prints debug information if debug flag is set
         debug(tokens, statements);
