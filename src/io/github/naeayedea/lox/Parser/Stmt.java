@@ -1,8 +1,8 @@
 package io.github.naeayedea.lox.Parser;
 
-import io.github.naeayedea.lox.Lexer.Token;
-
 import java.util.List;
+
+import io.github.naeayedea.lox.Lexer.Token;
 
 public abstract class Stmt {
 
@@ -35,10 +35,12 @@ public abstract class Stmt {
     public static class Class extends Stmt {
         public final Token name;
         public final List<Stmt.Function> methods;
+        public final List<Stmt.Function> statics;
 
-        public Class(Token name, List<Stmt.Function> methods) {
+        public Class(Token name, List<Stmt.Function> methods, List<Stmt.Function> statics) {
             this.name = name;
             this.methods = methods;
+            this.statics = statics;
         }
 
         @Override

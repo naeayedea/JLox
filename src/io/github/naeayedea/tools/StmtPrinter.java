@@ -41,6 +41,8 @@ public class StmtPrinter implements Stmt.Visitor<Void> {
         indents++;
         printWithTabs("CLASS: " + stmt.name.lexeme + " METHODS:\n", -1);
         stmt.methods.forEach(s -> {printTabs(indents); s.accept(this);});
+        printWithTabs("STATICS:\n", 0);
+        stmt.statics.forEach(s -> {printTabs(indents); s.accept(this);});
         printWithTabs("END CLASS\n", -1);
         indents--;
         return null;

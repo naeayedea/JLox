@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class LoxInstance {
 
-    private LoxClass klass;
-    private final Map<String, Object> fields = new HashMap<>();
+    private final LoxClass klass;
+    public final Map<String, Object> fields = new HashMap<>();
 
     public LoxInstance(LoxClass klass) {
         this.klass = klass;
@@ -20,8 +20,12 @@ public class LoxInstance {
             return fields.get(name.lexeme);
         }
 
-        LoxFunction method = klass.findMethod(name.lexeme);
-        if (method != null) return method.bind(this);
+        if (klass != null) {
+            LoxFunction method = klass.findMethod(name.lexeme);
+            if (method != null) return method.bind(this);
+        } else {
+            throw new RuntimeError(name, "Static method '" + name.lexeme + "' does not exist.");
+        }
 
         throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
     }

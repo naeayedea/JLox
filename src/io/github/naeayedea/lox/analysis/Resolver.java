@@ -249,6 +249,14 @@ public class Resolver implements Expr.Visitor<String>, Stmt.Visitor<Void> {
             resolveFunction(method, declaration);
         }
 
+        for (Stmt.Function method : stmt.statics) {
+            FunctionType declaration = FunctionType.METHOD;
+            if (method.name.lexeme.equals("init")) {
+                errors.add(new Error(method.name, "Object init function cannot be static."));
+            }
+            resolveFunction(method, declaration);
+        }
+
         endScope();
         currentClass = enclosingClass;
         return null;

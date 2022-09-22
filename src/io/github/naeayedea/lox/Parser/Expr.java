@@ -1,8 +1,8 @@
 package io.github.naeayedea.lox.Parser;
 
-import io.github.naeayedea.lox.Lexer.Token;
-
 import java.util.List;
+
+import io.github.naeayedea.lox.Lexer.Token;
 
 public abstract class Expr {
 
