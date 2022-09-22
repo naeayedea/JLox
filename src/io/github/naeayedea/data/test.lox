@@ -1,5 +1,5 @@
-var a = 3 + 5;
-var b = " hello";
+var x = 3 + 5;
+var y = " hello";
 /*
  * This is a multiline comment that should be ignored by the lexer
 */
@@ -10,7 +10,7 @@ print (false);
 print 2 + 1;
 print 35 * 2 - 70 + 120 / 60 * 2;
 print 35 * 2 - 70 + 120 / (60 * 2);
-print a + b;
+print x + y;
 
 /*
  * Testing scoping and shadowing
@@ -18,10 +18,10 @@ print a + b;
 var a = "global a";
 var b = "global b";
 var c = "global c";
-{
+fun outer() {
   var a = "outer a";
   var b = "outer b";
-  {
+  fun inner() {
     var a = "inner a";
     print a;
     print b;
