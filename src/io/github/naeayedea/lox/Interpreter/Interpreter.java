@@ -230,14 +230,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Map<Token, LoxFunction> statics = new HashMap<>();
         for (Stmt.Function method : stmt.methods) {
             LoxFunction function = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
-            methods.put(method.name.lexeme, function);
+            if (method.isStatic) {
+                statics.put(method.name, function);
+            } else {
+                methods.put(method.name.lexeme, function);
+            }
         }
-
         LoxClass klass = new LoxClass(stmt.name.lexeme, methods);
-        if (!stmt.statics.isEmpty()) {
-            for (Stmt.Function func : stmt.statics) {
-                LoxFunction function = new LoxFunction(func, environment, func.name.lexeme.equals("init"));
-                klass.set(func.name, function);
+        if (!statics.isEmpty()) {
+            for (Map.Entry<Token, LoxFunction> func : statics.entrySet()) {
+                klass.set(func.getKey(), func.getValue());
             }
         }
         environment.assign(stmt.name, klass);

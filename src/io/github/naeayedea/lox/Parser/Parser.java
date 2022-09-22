@@ -45,7 +45,7 @@ public class Parser {
     private Stmt declaration() {
         try {
             if (match(CLASS)) return classDeclaration();
-            if (match(FUN)) return function("function");
+            if (match(FUN)) return function("function", false);
             if (match(VAR)) return varDeclaration();
             return statement();
         } catch (ParseError error) {
@@ -59,19 +59,18 @@ public class Parser {
         consume(LEFT_BRACE, "Expect '{' before class body.");
 
         List<Stmt.Function> methods = new ArrayList<>();
-        List<Stmt.Function> statics = new ArrayList<>();
         while (!check(RIGHT_BRACE) && !isAtEnd()) {
             if (check(STATIC)) {
                 consume(STATIC, "Expect 'static' modifier for static functions.");
-                statics.add(function("method"));
+                methods.add(function("method", true));
             } else {
-                methods.add(function("method"));
+                methods.add(function("method", false));
             }
         }
 
         consume(RIGHT_BRACE, "Expect '}' after class body.");
 
-        return new Stmt.Class(name, methods, statics);
+        return new Stmt.Class(name, methods);
     }
 
     private Stmt statement() {
@@ -197,7 +196,7 @@ public class Parser {
         return new Stmt.Expression(expr);
     }
 
-    private Stmt.Function function(String kind) {
+    private Stmt.Function function(String kind, boolean isStatic) {
         Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
         consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
         List<Token> parameters = new ArrayList<>();
@@ -215,7 +214,7 @@ public class Parser {
 
         consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
         List<Stmt> body = block();
-        return new Stmt.Function(name, parameters, body);
+        return new Stmt.Function(name, parameters, body, isStatic);
     }
 
     private List<Stmt> block() {

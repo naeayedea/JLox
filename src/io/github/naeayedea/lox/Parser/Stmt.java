@@ -35,12 +35,10 @@ public abstract class Stmt {
     public static class Class extends Stmt {
         public final Token name;
         public final List<Stmt.Function> methods;
-        public final List<Stmt.Function> statics;
 
-        public Class(Token name, List<Stmt.Function> methods, List<Stmt.Function> statics) {
+        public Class(Token name, List<Stmt.Function> methods) {
             this.name = name;
             this.methods = methods;
-            this.statics = statics;
         }
 
         @Override
@@ -66,11 +64,13 @@ public abstract class Stmt {
         public final Token name;
         public final List<Token> params;
         public final List<Stmt> body;
+        public final Boolean isStatic;
 
-        public Function(Token name, List<Token> params, List<Stmt> body) {
+        public Function(Token name, List<Token> params, List<Stmt> body, Boolean isStatic) {
             this.name = name;
             this.params = params;
             this.body = body;
+            this.isStatic = isStatic;
         }
 
         @Override
