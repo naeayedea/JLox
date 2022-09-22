@@ -7,6 +7,7 @@ import io.github.naeayedea.lox.Lox;
 import io.github.naeayedea.lox.Parser.Stmt;
 import io.github.naeayedea.lox.errors.Return;
 import io.github.naeayedea.lox.errors.RuntimeError;
+import io.github.naeayedea.lox.utils.Utilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,7 +77,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 }
 
                 if (left instanceof String || right instanceof String) {
-                    return stringify(left) + stringify(right);
+                    return Utilities.stringify(left) + Utilities.stringify(right);
                 }
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
             case MINUS:
@@ -226,6 +227,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         environment.define(stmt.name, null);
 
         Map<String, LoxFunction> methods = new HashMap<>();
+        Map<Token, LoxFunction> statics = new HashMap<>();
         for (Stmt.Function method : stmt.methods) {
             LoxFunction function = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
             methods.put(method.name.lexeme, function);
@@ -269,7 +271,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
-        System.out.println(stringify(value));
+        System.out.println(Utilities.stringify(value));
         return null;
     }
 
@@ -338,18 +340,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return a.equals(b);
     }
 
-    private String stringify(Object object) {
-        if (object == null) return "nil";
-
-        String text = object.toString();
-        if (object instanceof Double) {
-            if (text.endsWith(".0")) {
-                text = text.substring(0, text.length() - 2);
-            }
-            return text;
-        }
-        return text;
-    }
 
     private void checkNumberOperand(Token operator, Object operand) {
         if (operand instanceof Double) return;
